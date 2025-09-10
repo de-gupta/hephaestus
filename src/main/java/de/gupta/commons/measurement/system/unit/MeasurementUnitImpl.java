@@ -1,12 +1,16 @@
 package de.gupta.commons.measurement.system.unit;
 
+import de.gupta.aletheia.functional.Unfolding;
 import de.gupta.commons.measurement.system.dimension.MeasurementDimension;
 import de.gupta.commons.measurement.system.dimension.MeasurementDimensionRegistry;
 import de.gupta.commons.utility.map.MapCleaner;
 import de.gupta.commons.utility.math.algebra.algebraicGroup.freeAbelianGroup.FreeAbelianGroup;
 import de.gupta.commons.utility.math.algebra.algebraicGroup.freeAbelianGroup.FreeAbelianGroupFactory;
+import de.gupta.commons.utility.string.StringFormatUtility;
 
+import java.util.AbstractMap;
 import java.util.EnumMap;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 record MeasurementUnitImpl(EnumMap<MeasurementUnitConstituent, Integer> components) implements MeasurementUnit
@@ -68,27 +72,16 @@ record MeasurementUnitImpl(EnumMap<MeasurementUnitConstituent, Integer> componen
 	@Override
 	public String symbol()
 	{
-		if (components.isEmpty())
-		{
-			return "";
-		}
+		return Unfolding.beckon(components)
+						.cleave(AbstractMap::isEmpty, _ -> "", symbolCalculator())
+						.summon();
+	}
 
-		String numerator = components.entrySet().stream()
-									 .filter(entry -> entry.getValue() > 0)
-									 .map(entry -> formatUnit(entry.getKey(), entry.getValue()))
-									 .collect(Collectors.joining("·"));
-
-		String denominator = components.entrySet().stream()
-									   .filter(entry -> entry.getValue() < 0)
-									   .map(entry -> formatUnit(entry.getKey(), Math.abs(entry.getValue())))
+	private Function<EnumMap<MeasurementUnitConstituent, Integer>, String> symbolCalculator()
+	{
+		return components -> components.entrySet().stream()
+									   .map(entry -> formatUnit(entry.getKey(), entry.getValue()))
 									   .collect(Collectors.joining("·"));
-
-		if (numerator.isEmpty())
-		{
-			return denominator.isEmpty() ? "" : "1/" + denominator;
-		}
-
-		return denominator.isEmpty() ? numerator : numerator + "/" + denominator;
 	}
 
 	@Override
@@ -102,7 +95,7 @@ record MeasurementUnitImpl(EnumMap<MeasurementUnitConstituent, Integer> componen
 	private String formatUnit(final MeasurementUnitConstituent constituent, final int exponent)
 	{
 		String symbol = constituent.symbol();
-		return exponent == 1 ? symbol : symbol + "^" + exponent;
+		return exponent == 1 ? symbol : symbol + StringFormatUtility.toSuperscript(exponent);
 	}
 
 	@Override
