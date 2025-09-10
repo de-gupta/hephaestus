@@ -9,7 +9,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.DoubleUnaryOperator;
 
-final class BasicUnit extends AbstractUnit implements Unit
+public final class BasicUnit extends AbstractUnit implements Unit
 {
 	private final String symbol;
 	private final Set<String> caseInsensitiveAliases;

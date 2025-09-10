@@ -35,10 +35,12 @@ public final class UnitUtility
 												 .flatMap(Set::stream)
 												 .collect(Collectors.toSet());
 
-		final var prefixedUnitRepresentations =
-				SetUtility.joinElementsOfSets(List.of(prefixRepresentation, unitRepresentations), "", String::concat);
+		// TODO
+//		final var prefixedUnitRepresentations =
+//				SetUtility.joinElementsOfSets(List.of(prefixRepresentation, unitRepresentations), "", String::concat);
 
-		return new TreeSet<>(prefixedUnitRepresentations);
+//		return new TreeSet<>(prefixedUnitRepresentations);
+		return null;
 	}
 
 	private static Set<String> unitRepresentationsForDimension(final MeasurementDimensionRegistry dimension)

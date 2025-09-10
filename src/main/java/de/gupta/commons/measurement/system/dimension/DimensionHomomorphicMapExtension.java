@@ -1,7 +1,7 @@
 package de.gupta.commons.measurement.system.dimension;
 
-import ai.eylo.commons.utility.math.algebra.algebraicGroup.Group;
-import ai.eylo.commons.utility.math.algebra.algebraicGroup.freeAbelianGroup.HomomorphicMapExtension;
+import de.gupta.commons.utility.math.algebra.algebraicGroup.Group;
+import de.gupta.commons.utility.math.algebra.algebraicGroup.freeAbelianGroup.HomomorphicMapExtension;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -22,6 +22,7 @@ public final class DimensionHomomorphicMapExtension
 		{
 			case MeasurementDimensionImpl that -> HomomorphicMapExtension.preimagesFromPartialMapping(
 					convertedPartialMapping, that.exponents());
+			default -> throw new IllegalStateException("Unexpected value: " + element);
 		};
 	}
 
@@ -30,6 +31,7 @@ public final class DimensionHomomorphicMapExtension
 		return switch (dimension)
 		{
 			case MeasurementDimensionImpl that -> that.exponents();
+			default -> throw new IllegalStateException("Unexpected value: " + dimension);
 		};
 	}
 

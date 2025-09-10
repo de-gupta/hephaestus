@@ -95,8 +95,9 @@ public final class CompositeUnit extends AbstractUnit implements Unit
 
 	private String formatUnit(BasicUnit unit, int exponent)
 	{
-		return exponent == 1 ? unit.symbol() : exponent == 0 ? EMPTY_UNIT_SYMBOL :
-				StringFormattingUtility.formatWithSuperscript(unit.symbol(), exponent, Integer.toString(exponent));
+		// TODO
+		return exponent == 1 ? unit.symbol() : exponent == 0 ? EMPTY_UNIT_SYMBOL : "";
+//				StringFormattingUtility.formatWithSuperscript(unit.symbol(), exponent, Integer.toString(exponent));
 	}
 
 	private String formatDenominator(String denominator)
