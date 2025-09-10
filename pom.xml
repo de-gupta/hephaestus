@@ -14,7 +14,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <athena.version>0.0.10-SNAPSHOT</athena.version>
-        <aletheia.vesion>0.0.12</aletheia.vesion>
+        <aletheia.vesion>0.0.14-SNAPSHOT</aletheia.vesion>
 
         <maven.compiler.plugin.version>3.14.0</maven.compiler.plugin.version>
         <maven.release.plugin.version>3.1.1</maven.release.plugin.version>

@@ -3,7 +3,7 @@ package de.gupta.commons.measurement.system.unit;
 import de.gupta.commons.measurement.system.dimension.MeasurementDimension;
 import de.gupta.commons.measurement.system.dimension.MeasurementDimensionRegistry;
 
-enum MeasurementUnitConstituent
+enum UnitConstituent
 {
 	KILOGRAM,
 	METER,

@@ -1,7 +1,7 @@
 package de.gupta.commons.measurement.system.quantity;
 
-import de.gupta.commons.measurement.system.unit.MeasurementUnit;
-import de.gupta.commons.measurement.system.unit.MeasurementUnitRegistry;
+import de.gupta.commons.measurement.system.unit.Unit;
+import de.gupta.commons.measurement.system.unit.UnitRegistry;
 import de.gupta.commons.utility.math.MathUtility;
 
 public record QuantityRepresentation(Number value, String unit)
@@ -11,12 +11,12 @@ public record QuantityRepresentation(Number value, String unit)
 		return new QuantityRepresentation(value, unit);
 	}
 
-	public static QuantityRepresentation of(Number value, MeasurementUnit unit)
+	public static QuantityRepresentation of(Number value, Unit unit)
 	{
 		return of(value, unit.symbol());
 	}
 
-	public static QuantityRepresentation of(Number value, MeasurementUnitRegistry unit)
+	public static QuantityRepresentation of(Number value, UnitRegistry unit)
 	{
 		return of(value, unit.symbol());
 	}

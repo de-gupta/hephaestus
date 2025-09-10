@@ -13,44 +13,44 @@ import java.util.EnumMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-record MeasurementUnitImpl(EnumMap<MeasurementUnitConstituent, Integer> components) implements MeasurementUnit
+record UnitImpl(EnumMap<UnitConstituent, Integer> components) implements Unit
 {
-	private static final MeasurementUnit IDENTITY =
-			MeasurementUnitImpl.of(new EnumMap<>(MeasurementUnitConstituent.class));
+	private static final Unit IDENTITY =
+			UnitImpl.of(new EnumMap<>(UnitConstituent.class));
 
-	private static final FreeAbelianGroup<MeasurementUnitConstituent> freeAbelianGroup =
-			FreeAbelianGroupFactory.create(MeasurementUnitConstituent.class);
+	private static final FreeAbelianGroup<UnitConstituent> freeAbelianGroup =
+			FreeAbelianGroupFactory.create(UnitConstituent.class);
 
-	static MeasurementUnit of(final EnumMap<MeasurementUnitConstituent, Integer> components)
+	static Unit of(final EnumMap<UnitConstituent, Integer> components)
 	{
-		return new MeasurementUnitImpl(MapCleaner.removeKeyIfValueEquals(components, 0));
+		return new UnitImpl(MapCleaner.removeKeyIfValueEquals(components, 0));
 	}
 
-	static MeasurementUnit identity()
+	static Unit identity()
 	{
 		return IDENTITY;
 	}
 
 	@Override
-	public MeasurementUnit multiply(final MeasurementUnit other)
+	public Unit multiply(final Unit other)
 	{
-		return other instanceof MeasurementUnitImpl(EnumMap<MeasurementUnitConstituent, Integer> those)
-				? MeasurementUnitImpl.of(freeAbelianGroup.add(components, those))
+		return other instanceof UnitImpl(EnumMap<UnitConstituent, Integer> those)
+				? UnitImpl.of(freeAbelianGroup.add(components, those))
 				: other.multiply(this);
 	}
 
 	@Override
-	public MeasurementUnit divide(final MeasurementUnit other)
+	public Unit divide(final Unit other)
 	{
-		return other instanceof MeasurementUnitImpl(EnumMap<MeasurementUnitConstituent, Integer> those)
-				? MeasurementUnitImpl.of(freeAbelianGroup.subtract(components, those))
+		return other instanceof UnitImpl(EnumMap<UnitConstituent, Integer> those)
+				? UnitImpl.of(freeAbelianGroup.subtract(components, those))
 				: other.divide(this);
 	}
 
 	@Override
-	public MeasurementUnit power(final int power)
+	public Unit power(final int power)
 	{
-		return power == 0 ? identity() : MeasurementUnitImpl.of(freeAbelianGroup.scale(components, power));
+		return power == 0 ? identity() : UnitImpl.of(freeAbelianGroup.scale(components, power));
 	}
 
 	@Override
@@ -77,7 +77,7 @@ record MeasurementUnitImpl(EnumMap<MeasurementUnitConstituent, Integer> componen
 						.summon();
 	}
 
-	private Function<EnumMap<MeasurementUnitConstituent, Integer>, String> symbolCalculator()
+	private Function<EnumMap<UnitConstituent, Integer>, String> symbolCalculator()
 	{
 		return components -> components.entrySet().stream()
 									   .map(entry -> formatUnit(entry.getKey(), entry.getValue()))
@@ -87,12 +87,12 @@ record MeasurementUnitImpl(EnumMap<MeasurementUnitConstituent, Integer> componen
 	@Override
 	public boolean equals(final Object o)
 	{
-		return this == o || o instanceof MeasurementUnitImpl(
-				EnumMap<MeasurementUnitConstituent, Integer> components1
+		return this == o || o instanceof UnitImpl(
+				EnumMap<UnitConstituent, Integer> components1
 		) && components.equals(components1);
 	}
 
-	private String formatUnit(final MeasurementUnitConstituent constituent, final int exponent)
+	private String formatUnit(final UnitConstituent constituent, final int exponent)
 	{
 		String symbol = constituent.symbol();
 		return exponent == 1 ? symbol : symbol + StringFormatUtility.toSuperscript(exponent);
@@ -101,6 +101,6 @@ record MeasurementUnitImpl(EnumMap<MeasurementUnitConstituent, Integer> componen
 	@Override
 	public String toString()
 	{
-		return "MeasurementUnit{components=" + components + "}";
+		return "Unit{components=" + components + "}";
 	}
 }

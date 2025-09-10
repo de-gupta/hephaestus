@@ -2,13 +2,13 @@ package de.gupta.commons.measurement.system.unit;
 
 import de.gupta.commons.measurement.system.dimension.MeasurementDimension;
 
-public sealed interface MeasurementUnit permits MeasurementUnitImpl, MeasurementUnitRegistry
+public sealed interface Unit permits UnitImpl, UnitRegistry
 {
-	MeasurementUnit multiply(MeasurementUnit other);
+	Unit multiply(Unit other);
 
-	MeasurementUnit divide(MeasurementUnit other);
+	Unit divide(Unit other);
 
-	MeasurementUnit power(int power);
+	Unit power(int power);
 
 	MeasurementDimension dimension();
 
