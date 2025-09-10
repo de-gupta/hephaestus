@@ -6,6 +6,16 @@ public final class MeasurementUnitFactory
 {
 	public static MeasurementUnit multiply(MeasurementUnit left, MeasurementUnit right)
 	{
+		// Convert BasicMeasurementUnit to registry operations for consistency
+		if (left instanceof BasicMeasurementUnit)
+		{
+			return multiply(convertBasicToRegistry(left), right);
+		}
+		if (right instanceof BasicMeasurementUnit)
+		{
+			return multiply(left, convertBasicToRegistry(right));
+		}
+
 		if (left instanceof MeasurementUnitRegistry leftRegistry && right instanceof MeasurementUnitRegistry rightRegistry)
 		{
 			return createFromRegistryPair(leftRegistry, 1, rightRegistry, 1);
@@ -27,6 +37,16 @@ public final class MeasurementUnitFactory
 
 	public static MeasurementUnit divide(MeasurementUnit left, MeasurementUnit right)
 	{
+		// Convert BasicMeasurementUnit to registry operations for consistency
+		if (left instanceof BasicMeasurementUnit)
+		{
+			return divide(convertBasicToRegistry(left), right);
+		}
+		if (right instanceof BasicMeasurementUnit)
+		{
+			return divide(left, convertBasicToRegistry(right));
+		}
+
 		if (left instanceof MeasurementUnitRegistry leftRegistry && right instanceof MeasurementUnitRegistry rightRegistry)
 		{
 			return createFromRegistryPair(leftRegistry, 1, rightRegistry, -1);
@@ -48,6 +68,12 @@ public final class MeasurementUnitFactory
 
 	public static MeasurementUnit power(MeasurementUnit unit, int exponent)
 	{
+		// Convert BasicMeasurementUnit to registry operations for consistency
+		if (unit instanceof BasicMeasurementUnit)
+		{
+			return power(convertBasicToRegistry(unit), exponent);
+		}
+
 		if (unit instanceof MeasurementUnitRegistry registry)
 		{
 			return createFromRegistry(registry, exponent);
@@ -103,6 +129,19 @@ public final class MeasurementUnitFactory
 		EnumMap<MeasurementUnitRegistry, Integer> components = new EnumMap<>(MeasurementUnitRegistry.class);
 		impl.components().forEach((key, value) -> components.put(key, value * exponent));
 		return MeasurementUnitImpl.of(components);
+	}
+
+	private static MeasurementUnitRegistry convertBasicToRegistry(MeasurementUnit basicUnit)
+	{
+		// Find the registry enum that corresponds to this basic unit
+		for (MeasurementUnitRegistry registry : MeasurementUnitRegistry.values())
+		{
+			if (registry.unit().equals(basicUnit))
+			{
+				return registry;
+			}
+		}
+		throw new IllegalArgumentException("Cannot find registry enum for basic unit: " + basicUnit);
 	}
 
 	private MeasurementUnitFactory() {}

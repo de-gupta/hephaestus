@@ -6,7 +6,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public sealed interface MeasurementUnit permits MeasurementUnitImpl, MeasurementUnitRegistry
+public sealed interface MeasurementUnit permits MeasurementUnitImpl, MeasurementUnitRegistry, BasicMeasurementUnit
 {
 	MeasurementUnit multiply(MeasurementUnit other);
 
