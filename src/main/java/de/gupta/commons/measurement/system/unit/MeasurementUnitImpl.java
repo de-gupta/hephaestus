@@ -3,72 +3,66 @@ package de.gupta.commons.measurement.system.unit;
 import de.gupta.commons.measurement.system.dimension.MeasurementDimension;
 import de.gupta.commons.measurement.system.dimension.MeasurementDimensionRegistry;
 import de.gupta.commons.utility.map.MapCleaner;
+import de.gupta.commons.utility.math.algebra.algebraicGroup.freeAbelianGroup.FreeAbelianGroup;
+import de.gupta.commons.utility.math.algebra.algebraicGroup.freeAbelianGroup.FreeAbelianGroupFactory;
 
 import java.util.EnumMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 
-final class MeasurementUnitImpl implements MeasurementUnit
+record MeasurementUnitImpl(EnumMap<MeasurementUnitConstituent, Integer> components) implements MeasurementUnit
 {
-	private final EnumMap<MeasurementUnitRegistry, Integer> components;
+	private static final MeasurementUnit IDENTITY =
+			MeasurementUnitImpl.of(new EnumMap<>(MeasurementUnitConstituent.class));
 
-	static MeasurementUnit of(final EnumMap<MeasurementUnitRegistry, Integer> components)
+	private static final FreeAbelianGroup<MeasurementUnitConstituent> freeAbelianGroup =
+			FreeAbelianGroupFactory.create(MeasurementUnitConstituent.class);
+
+	static MeasurementUnit of(final EnumMap<MeasurementUnitConstituent, Integer> components)
 	{
-		EnumMap<MeasurementUnitRegistry, Integer> cleanedComponents = MapCleaner.removeKeyIfValueEquals(components, 0);
+		return new MeasurementUnitImpl(MapCleaner.removeKeyIfValueEquals(components, 0));
+	}
 
-		if (cleanedComponents.size() == 1)
-		{
-			Map.Entry<MeasurementUnitRegistry, Integer> entry = cleanedComponents.entrySet().iterator().next();
-			if (entry.getValue() == 1)
-			{
-				return entry.getKey();
-			}
-		}
-
-		// If empty or all zero, return dimensionless
-		if (cleanedComponents.isEmpty())
-		{
-			return MeasurementUnitRegistry.DIMENSIONLESS;
-		}
-
-		return new MeasurementUnitImpl(cleanedComponents);
+	static MeasurementUnit identity()
+	{
+		return IDENTITY;
 	}
 
 	@Override
 	public MeasurementUnit multiply(final MeasurementUnit other)
 	{
-		return MeasurementUnitFactory.multiply(this, other);
+		return other instanceof MeasurementUnitImpl(EnumMap<MeasurementUnitConstituent, Integer> those)
+				? MeasurementUnitImpl.of(freeAbelianGroup.add(components, those))
+				: other.multiply(this);
 	}
 
 	@Override
 	public MeasurementUnit divide(final MeasurementUnit other)
 	{
-		return MeasurementUnitFactory.divide(this, other);
+		return other instanceof MeasurementUnitImpl(EnumMap<MeasurementUnitConstituent, Integer> those)
+				? MeasurementUnitImpl.of(freeAbelianGroup.subtract(components, those))
+				: other.divide(this);
 	}
 
 	@Override
 	public MeasurementUnit power(final int power)
 	{
-		return MeasurementUnitFactory.power(this, power);
+		return power == 0 ? identity() : MeasurementUnitImpl.of(freeAbelianGroup.scale(components, power));
 	}
 
 	@Override
 	public MeasurementDimension dimension()
 	{
 		return components.entrySet().stream()
-				.map(entry -> entry.getKey().dimension().power(entry.getValue()))
-				.reduce(MeasurementDimensionRegistry.DIMENSIONLESS, MeasurementDimension::multiply);
+						 .map(entry -> entry.getKey().dimension().power(entry.getValue()))
+						 .reduce(MeasurementDimensionRegistry.DIMENSIONLESS, MeasurementDimension::multiply);
 	}
 
 	@Override
 	public double conversionToBaseUnitFactor()
 	{
 		return components.entrySet().stream()
-			.mapToDouble(entry -> Math.pow(entry.getKey().conversionToBaseUnitFactor(), entry.getValue()))
-			.reduce(1.0, (a, b) -> a * b);
+						 .mapToDouble(entry -> Math.pow(entry.getKey().factor(), entry.getValue()))
+						 .reduce(1.0, (a, b) -> a * b);
 	}
 
 	@Override
@@ -80,14 +74,14 @@ final class MeasurementUnitImpl implements MeasurementUnit
 		}
 
 		String numerator = components.entrySet().stream()
-				.filter(entry -> entry.getValue() > 0)
-				.map(entry -> formatUnit(entry.getKey(), entry.getValue()))
-				.collect(Collectors.joining("·"));
+									 .filter(entry -> entry.getValue() > 0)
+									 .map(entry -> formatUnit(entry.getKey(), entry.getValue()))
+									 .collect(Collectors.joining("·"));
 
 		String denominator = components.entrySet().stream()
-				.filter(entry -> entry.getValue() < 0)
-				.map(entry -> formatUnit(entry.getKey(), Math.abs(entry.getValue())))
-				.collect(Collectors.joining("·"));
+									   .filter(entry -> entry.getValue() < 0)
+									   .map(entry -> formatUnit(entry.getKey(), Math.abs(entry.getValue())))
+									   .collect(Collectors.joining("·"));
 
 		if (numerator.isEmpty())
 		{
@@ -98,49 +92,22 @@ final class MeasurementUnitImpl implements MeasurementUnit
 	}
 
 	@Override
-	public Set<String> caseSensitiveAliases()
-	{
-		// For composite units, return empty set - aliases are too complex to generate meaningfully
-		return Set.of();
-	}
-
-	@Override
-	public Set<String> caseInsensitiveAliases()
-	{
-		// For composite units, return empty set - aliases are too complex to generate meaningfully
-		return Set.of();
-	}
-
-	private String formatUnit(MeasurementUnitRegistry unit, int exponent)
-	{
-		return exponent == 1 ? unit.symbol() : unit.symbol() + "^" + exponent;
-	}
-
-	EnumMap<MeasurementUnitRegistry, Integer> components()
-	{
-		return components;
-	}
-
-	@Override
-	public int hashCode()
-	{
-		return Objects.hashCode(components);
-	}
-
-	@Override
 	public boolean equals(final Object o)
 	{
-		return this == o || o instanceof MeasurementUnitImpl that && components.equals(that.components);
+		return this == o || o instanceof MeasurementUnitImpl(
+				EnumMap<MeasurementUnitConstituent, Integer> components1
+		) && components.equals(components1);
+	}
+
+	private String formatUnit(final MeasurementUnitConstituent constituent, final int exponent)
+	{
+		String symbol = constituent.symbol();
+		return exponent == 1 ? symbol : symbol + "^" + exponent;
 	}
 
 	@Override
 	public String toString()
 	{
 		return "MeasurementUnit{components=" + components + "}";
-	}
-
-	private MeasurementUnitImpl(final EnumMap<MeasurementUnitRegistry, Integer> components)
-	{
-		this.components = components;
 	}
 }

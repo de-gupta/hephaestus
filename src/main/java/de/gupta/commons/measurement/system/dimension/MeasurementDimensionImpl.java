@@ -5,21 +5,20 @@ import de.gupta.commons.utility.math.algebra.algebraicGroup.freeAbelianGroup.Fre
 import de.gupta.commons.utility.math.algebra.algebraicGroup.freeAbelianGroup.FreeAbelianGroupFactory;
 
 import java.util.EnumMap;
-import java.util.Objects;
 
-final class MeasurementDimensionImpl implements MeasurementDimension
+record MeasurementDimensionImpl(EnumMap<MeasurementDimensionConstituent, Integer> exponents)
+		implements MeasurementDimension
 {
 	static final MeasurementDimension IDENTITY =
 			MeasurementDimensionImpl.of(new EnumMap<>(MeasurementDimensionConstituent.class));
 	private static final FreeAbelianGroup<MeasurementDimensionConstituent> freeAbelianGroup =
 			FreeAbelianGroupFactory.create(MeasurementDimensionConstituent.class);
-	private final EnumMap<MeasurementDimensionConstituent, Integer> exponents;
 
 	@Override
 	public MeasurementDimension multiply(final MeasurementDimension other)
 	{
-		return other instanceof MeasurementDimensionImpl that ?
-				MeasurementDimensionImpl.of(freeAbelianGroup.add(this.exponents, that.exponents)) :
+		return other instanceof MeasurementDimensionImpl(EnumMap<MeasurementDimensionConstituent, Integer> exponents1) ?
+				MeasurementDimensionImpl.of(freeAbelianGroup.add(this.exponents, exponents1)) :
 				other.multiply(this);
 	}
 
@@ -31,8 +30,8 @@ final class MeasurementDimensionImpl implements MeasurementDimension
 	@Override
 	public MeasurementDimension divide(final MeasurementDimension other)
 	{
-		return other instanceof MeasurementDimensionImpl that ?
-				MeasurementDimensionImpl.of(freeAbelianGroup.subtract(this.exponents, that.exponents)) :
+		return other instanceof MeasurementDimensionImpl(EnumMap<MeasurementDimensionConstituent, Integer> exponents1) ?
+				MeasurementDimensionImpl.of(freeAbelianGroup.subtract(this.exponents, exponents1)) :
 				other.divide(this);
 	}
 
@@ -43,15 +42,11 @@ final class MeasurementDimensionImpl implements MeasurementDimension
 	}
 
 	@Override
-	public int hashCode()
-	{
-		return Objects.hashCode(exponents);
-	}
-
-	@Override
 	public boolean equals(final Object o)
 	{
-		return this == o || o instanceof MeasurementDimensionImpl that && exponents.equals(that.exponents);
+		return this == o || o instanceof MeasurementDimensionImpl(
+				EnumMap<MeasurementDimensionConstituent, Integer> exponents1
+		) && exponents.equals(exponents1);
 	}
 
 	@Override
@@ -60,15 +55,5 @@ final class MeasurementDimensionImpl implements MeasurementDimension
 		return "MeasurementDimension{" +
 				"exponents=" + exponents +
 				'}';
-	}
-
-	EnumMap<MeasurementDimensionConstituent, Integer> exponents()
-	{
-		return exponents;
-	}
-
-	private MeasurementDimensionImpl(final EnumMap<MeasurementDimensionConstituent, Integer> exponents)
-	{
-		this.exponents = exponents;
 	}
 }
