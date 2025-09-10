@@ -5,8 +5,10 @@ import de.gupta.commons.measurement.system.dimension.MeasurementDimensionRegistr
 import de.gupta.commons.utility.map.MapCleaner;
 
 import java.util.EnumMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 final class MeasurementUnitImpl implements MeasurementUnit
@@ -93,6 +95,20 @@ final class MeasurementUnitImpl implements MeasurementUnit
 		}
 
 		return denominator.isEmpty() ? numerator : numerator + "/" + denominator;
+	}
+
+	@Override
+	public Set<String> caseSensitiveAliases()
+	{
+		// For composite units, return empty set - aliases are too complex to generate meaningfully
+		return Set.of();
+	}
+
+	@Override
+	public Set<String> caseInsensitiveAliases()
+	{
+		// For composite units, return empty set - aliases are too complex to generate meaningfully
+		return Set.of();
 	}
 
 	private String formatUnit(MeasurementUnitRegistry unit, int exponent)
