@@ -13,7 +13,7 @@
         <maven.compiler.target>24</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <athena.version>0.0.9-SNAPSHOT</athena.version>
+        <athena.version>0.0.10-SNAPSHOT</athena.version>
         <aletheia.vesion>0.0.12</aletheia.vesion>
 
         <maven.compiler.plugin.version>3.14.0</maven.compiler.plugin.version>
