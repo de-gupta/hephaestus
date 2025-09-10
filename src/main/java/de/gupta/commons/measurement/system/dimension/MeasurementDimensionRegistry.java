@@ -2,7 +2,7 @@ package de.gupta.commons.measurement.system.dimension;
 
 import java.util.Map;
 
-public enum MeasurementDimensionRegistry
+public enum MeasurementDimensionRegistry implements MeasurementDimension
 {
 	DIMENSIONLESS,
 	MASS,
@@ -15,6 +15,7 @@ public enum MeasurementDimensionRegistry
 	MASS_DENSITY,
 	ENERGY_DENSITY;
 
+	@Deprecated
 	public final MeasurementDimension dimension()
 	{
 		return switch (this)
@@ -33,5 +34,23 @@ public enum MeasurementDimensionRegistry
 			case ENERGY_DENSITY ->
 					MASS.dimension().multiply(LENGTH.dimension().power(-1)).divide(TIME.dimension().power(2));
 		};
+	}
+
+	@Override
+	public MeasurementDimension multiply(final MeasurementDimension other)
+	{
+		return this.dimension().multiply(other);
+	}
+
+	@Override
+	public MeasurementDimension divide(final MeasurementDimension other)
+	{
+		return this.dimension().divide(other);
+	}
+
+	@Override
+	public MeasurementDimension power(final int power)
+	{
+		return this.dimension().power(power);
 	}
 }

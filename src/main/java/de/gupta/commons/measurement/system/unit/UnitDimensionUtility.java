@@ -19,7 +19,8 @@ public final class UnitDimensionUtility
 
 	public static Set<Unit> unitsForDimension(MeasurementDimension dimension)
 	{
-		return DimensionHomomorphicMapExtension.homomorphicExtension(partialMapping(), dimension);
+		return null;
+//		return DimensionHomomorphicMapExtension.homomorphicExtension(partialMapping(), dimension);
 	}
 
 	private static Map<Unit, MeasurementDimension> partialMapping()
